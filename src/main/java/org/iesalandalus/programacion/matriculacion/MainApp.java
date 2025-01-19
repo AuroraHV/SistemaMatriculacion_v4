@@ -18,7 +18,7 @@ import static org.iesalandalus.programacion.matriculacion.vista.Consola.getMatri
 import static org.iesalandalus.programacion.matriculacion.vista.Consola.leerMatricula;
 
 public class MainApp {
-    public static final int CAPACIDAD = 3;
+    public static final int CAPACIDAD = 10;
 
     private static Alumnos alumnos = new Alumnos(CAPACIDAD);
     private static Asignaturas asignaturas = new Asignaturas(CAPACIDAD);
@@ -148,12 +148,21 @@ public class MainApp {
     private static void insertarAsignatura() {
         try {
             Asignatura asignatura = Consola.leerAsignatura(ciclosFormativos);
+            if (asignatura == null) {
+                // Se regresa al menú porque no se encontró un ciclo
+                return;
+            }
             asignaturas.insertar(asignatura);
             System.out.println("Asignatura insertada correctamente.");
         } catch (Exception e) {
-            System.out.println("ERROR: " + e.getMessage());
+            String mensaje = e.getMessage();
+            if (!mensaje.startsWith("ERROR: ")) {
+                mensaje = "ERROR: " + mensaje;
+            }
+            System.out.println(mensaje);
         }
     }
+
 
     private static void buscarAsignatura() {
         try {
@@ -222,6 +231,9 @@ public class MainApp {
     private static void insertarMatricula() {
         try {
             Matricula matricula = Consola.leerMatricula(alumnos, asignaturas);
+            if (matricula == null) {
+                return; // Volver al menú si la matrícula no se pudo crear
+            }
             matriculas.insertar(matricula);
             System.out.println("Matrícula insertada correctamente.");
         } catch (Exception e) {
@@ -344,33 +356,54 @@ public class MainApp {
 
 
     private static void mostrarMatriculasPorCursoAcademico() {
-        try {
-            // Solicitamos el curso académico al usuario
-            System.out.print("Introduce el curso académico (formato 23-24): ");
-            String cursoAcademico = Entrada.cadena();
+        boolean valido = false;
+        String cursoAcademico = null;
 
-            // Validamos el formato del curso académico
-            if (cursoAcademico == null || cursoAcademico.isBlank() || !cursoAcademico.matches(Matricula.ER_CURSO_ACADEMICO)) {
-                throw new IllegalArgumentException("ERROR: El curso académico debe cumplir con el formato adecuado (23-24).");
+        // Bucle para garantizar que se introduce un curso válido
+        do {
+            try {
+                System.out.print("Introduce el curso académico (formato yy-yy): ");
+                cursoAcademico = Entrada.cadena();
+
+                // Validar si el curso académico se ha introducido y cump9le el formato
+                if (cursoAcademico == null || cursoAcademico.isBlank()) {
+                    throw new IllegalArgumentException("ERROR: Debes introducir un curso académico.");
+                }
+
+                if (!cursoAcademico.matches(Matricula.ER_CURSO_ACADEMICO)) {
+                    throw new IllegalArgumentException("ERROR: El curso académico debe cumplir con el formato adecuado (23-24).");
+                }
+
+                valido = true; // Salir del bucle si no hay excepciones
+
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
+        } while (!valido);
 
-            // Verificamos si existen matrículas asociadas al curso académico
+        // Verificar si hay matrículas registradas para el curso académico
+        try {
             if (matriculas.getTamano() == 0) {
-                System.out.println("No hay matrículas registradas para el curso académico proporcionado.");
+                System.out.println("No hay matrículas registradas en el sistema.");
                 return;
             }
 
-            // Mostramos las matrículas asociadas al curso académico
-            System.out.println("Matrículas registradas para el curso académico:");
+            // Filtrar y mostrar matrículas correspondientes al curso académico
+            boolean encontrado = false;
+            System.out.println("Matrículas registradas para el curso académico " + cursoAcademico + ":");
             for (Matricula matricula : matriculas.get(cursoAcademico)) {
                 System.out.println(matricula.toString());
+                encontrado = true; // Indicar que se encontró al menos una matrícula
             }
-        } catch (IllegalArgumentException e) {
-            System.out.println("ERROR: " + e.getMessage());
+
+            if (!encontrado) {
+                System.out.println("No hay matrículas registradas para el curso académico proporcionado.");
+            }
         } catch (Exception e) {
-            System.out.println("ERROR: Ocurrió un error inesperado.");
+            System.out.println("ERROR: Ocurrió un error inesperado al buscar las matrículas.");
         }
     }
+
 
 }
 

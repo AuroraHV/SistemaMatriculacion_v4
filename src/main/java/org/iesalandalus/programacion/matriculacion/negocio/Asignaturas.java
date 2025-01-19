@@ -50,6 +50,18 @@ public class Asignaturas {
         if (buscarIndice(asignatura) != -1) {
             throw new OperationNotSupportedException("ERROR: Ya existe una asignatura con ese código.");
         }
+        // Validar que las horas no excedan el límite del ciclo formativo
+        int horasTotales = asignatura.getHorasAnuales();
+        for (int i = 0; i < tamano; i++) {
+            if (coleccionAsignaturas[i].getCicloFormativo().equals(asignatura.getCicloFormativo())) {
+                horasTotales += coleccionAsignaturas[i].getHorasAnuales();
+            }
+        }
+
+        if (horasTotales > asignatura.getCicloFormativo().getHoras()) {
+            throw new IllegalArgumentException("ERROR: El número de horas de la asignatura excede del total de horas del ciclo formativo.");
+        }
+
         coleccionAsignaturas[tamano] = asignatura;
         tamano++;
     }

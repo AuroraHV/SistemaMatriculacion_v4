@@ -72,6 +72,7 @@ public class Matricula {
         if (!cursoAcademico.matches(ER_CURSO_ACADEMICO)) {
             throw new IllegalArgumentException("ERROR: El formato del curso académico no es correcto.");
         }
+
         this.cursoAcademico = cursoAcademico;
     }
 

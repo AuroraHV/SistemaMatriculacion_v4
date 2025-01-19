@@ -436,11 +436,33 @@ public class Consola {
         especialidad = leerEspecialidadProfesorado();
 
         // Validar ciclo formativo
-        ciclo = leerCicloFormativo();
+        valido = false;
+        ciclo = null;
+
+        do {
+            try {
+                // Pedir el código del ciclo formativo
+                CicloFormativo cicloFormativoTemporal = Consola.getCicloFormativoPorCodigo();
+
+                // Intentar crear un CicloFormativo temporal para validar el código
+                ciclo = new CicloFormativo(cicloFormativoTemporal.getCodigo(), "Ficticio", Grado.GDCFGM, "Ficticio", 1000);
+
+                // Buscar el ciclo formativo en la colección
+                ciclo = ciclosFormativos.buscar(ciclo);
+                if (ciclo == null) {
+                    // Si no encuentra el ciclo, imprimir mensaje y volver al menú
+                    System.out.println("ERROR: No se ha encontrado un ciclo formativo con el código proporcionado. Introduce antes dicho ciclo formativo o crea una asignatura con un ciclo formativo existente.");
+                    return null;
+                }
+
+                valido = true; // Si no lanza excepción, el ciclo es válido
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage()); // Mostrar el error al usuario
+            }
+        } while (!valido);
 
         return new Asignatura(codigo, nombre, horasAnuales, curso, horasDesdoble, especialidad, ciclo);
     }
-
 
     public static Asignatura getAsignaturaPorCodigo() {
         String codigo = null;
@@ -485,13 +507,28 @@ public class Consola {
                 new Alumno("Carlos", "12345678Z", "carlos.perez@gmail.com", "612345678", LocalDate.of(2000, 1, 1)),
                 new Asignatura[0]);
 
-        Alumno alumno = getAlumnoPorDni(); // Obtener alumno válido por DNI
+        Alumno alumno = null;
         int idMatricula = 0;
         LocalDate fechaMatriculacion = null;
         LocalDate fechaAnulacion = null;
 
-        // Validar el ID de matrícula
+        // Validar el DNI del alumno y verificar si existe en la colección
         boolean valido = false;
+        do {
+            try {
+                alumno = getAlumnoPorDni(); // Obtener un objeto Alumno con el DNI ingresado
+                if (alumnos.buscar(alumno) == null) {
+                    System.out.println("ERROR: No se ha encontrado ningún alumno con el DNI proporcionado. Introduce antes dicho alumno o crea una matricula nueva con un alumno existente.");
+                    return null; // Regresar al menú si no existe el alumno
+                }
+                valido = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println("ERROR: " + e.getMessage());
+            }
+        } while (!valido);
+
+        // Validar el ID de matrícula
+        valido = false;
         do {
             System.out.print("Introduce el identificador de la matrícula: ");
             try {
@@ -545,6 +582,11 @@ public class Consola {
                 fechaAnulacion = null; // Reset para pedir otra vez
             }
         }
+        // Calcular el curso académico basado en la fecha de matriculación
+        String cursoAcademico;
+        int anioInicio = fechaMatriculacion.getYear();
+        int anioFin = anioInicio + 1;
+        cursoAcademico = String.format("%02d-%02d", anioInicio % 100, anioFin % 100);
 
         // Validar asignaturas
         Asignatura[] asignaturasMatricula = new Asignatura[Matricula.MAXIMO_NUMERO_ASIGNATURAS_POR_MATRICULA];
@@ -556,12 +598,29 @@ public class Consola {
             System.out.print("Introduce el código de la asignatura: ");
             String codigo = Entrada.cadena();
             if (codigo.equalsIgnoreCase("FIN")) {
-                break;
+                // Verificar si no se ha introducido ninguna asignatura
+                if (indice == 0) {
+                    System.out.println("ERROR: Debes introducir al menos una asignatura antes de completar la matrícula.");
+                    continue; // Volver al inicio del bucle
+                }
+                break; // Salir del bucle si ya hay asignaturas introducidas
             }
             try {
-                Asignatura asignatura = getAsignaturaPorCodigo(); // Método para obtener asignatura válida por código
+                // Buscar asignatura por código en la colección de asignaturas
+                Asignatura asignaturaTemporal = new Asignatura(codigo, "Ficticia", 200, Curso.PRIMERO, 5,
+                        EspecialidadProfesorado.INFORMATICA, new CicloFormativo(1234, "Ficticio", Grado.GDCFGM, "Grado Medio", 1000));
+                Asignatura asignatura = asignaturas.buscar(asignaturaTemporal);
+
+                // Verificar si la asignatura existe
+                if (asignatura == null) {
+                    System.out.println("ERROR: No se ha encontrado ninguna asignatura con el código proporcionado.Inserta antes una asignatura con dicho código o vuelve a crear la matrícula con una asignatura existente.");
+                    return null; // Interrumpe el proceso y vuelve al menú principal
+                }
+
+                // Calcular las horas totales
                 int horasTotales = totalHoras + asignatura.getHorasAnuales() + asignatura.getHorasDesdoble();
 
+                // Validar si ya está matriculada o si supera el máximo de horas
                 if (asignaturaYaMatriculada(asignaturasMatricula, asignatura)) {
                     System.out.println("ERROR: La asignatura ya está matriculada.");
                 } else if (horasTotales > Matricula.MAXIMO_NUMERO_HORAS_MATRICULA) {
@@ -576,8 +635,14 @@ public class Consola {
             }
         }
 
+        // Verificar si no se introdujo ninguna asignatura
+        if (indice == 0) {
+            System.out.println("ERROR: No se puede crear la matrícula sin ninguna asignatura.");
+            return null; // Volver al menú principal
+        }
+
         // Crear y devolver la matrícula válida
-        Matricula matricula = new Matricula(idMatricula, "23-24", fechaMatriculacion, alumno, Arrays.copyOf(asignaturasMatricula, indice));
+        Matricula matricula = new Matricula(idMatricula,cursoAcademico, fechaMatriculacion, alumno, Arrays.copyOf(asignaturasMatricula, indice));
         matricula.setFechaAnulacion(fechaAnulacion); // Si no se introdujo fecha de anulación, será null
         return matricula;
     }
