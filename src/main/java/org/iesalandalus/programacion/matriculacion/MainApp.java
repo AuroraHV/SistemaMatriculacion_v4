@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.iesalandalus.programacion.matriculacion.vista.Consola.getMatriculaPorIdentificador;
 import static org.iesalandalus.programacion.matriculacion.vista.Consola.leerMatricula;
-
+//p
 public class MainApp {
     public static final int CAPACIDAD = 10;
 
