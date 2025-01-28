@@ -2,17 +2,12 @@ package org.iesalandalus.programacion.matriculacion.vista;
 
 import org.iesalandalus.programacion.utilidades.Entrada;
 import org.iesalandalus.programacion.matriculacion.dominio.*;
-import org.iesalandalus.programacion.matriculacion.negocio.Alumnos;
-import org.iesalandalus.programacion.matriculacion.negocio.Asignaturas;
-import org.iesalandalus.programacion.matriculacion.negocio.CiclosFormativos;
 
 import javax.naming.OperationNotSupportedException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
-
-
 
 //1-Clase Consola
 public class Consola {
@@ -131,7 +126,6 @@ public class Consola {
    public static Alumno getAlumnoPorDni() {
        String dni = null;
        boolean valido = false;
-
        do {
            System.out.print("Introduce el DNI del alumno: ");
            try {
@@ -140,7 +134,6 @@ public class Consola {
                if (dni == null || dni.isBlank()) {
                    throw new IllegalArgumentException("ERROR: El DNI no puede ser nulo ni estar vacío.");
                }
-
                // Crear un alumno temporal para validar el DNI
                Alumno alumnoDni = new Alumno("Ficticio", dni, "correo@ficticio.com", "600000000", LocalDate.of(2000, 1, 1));
                valido = true; // Si no lanza excepción, el DNI es válido
@@ -155,16 +148,26 @@ public class Consola {
 
     //Introduce fecha
     public static LocalDate leerFecha(String mensaje) {
-        final Alumno ALUMNOGUIA = new Alumno("Carlos", "12345678Z", "carlos.perez@gmail.com", "612345678",
+        // Alumno ficticio para validar la fecha
+        final Alumno ALUMNO_GUIA = new Alumno("Carlos", "12345678Z", "carlos.perez@gmail.com", "612345678",
                 LocalDate.parse("15/03/1998", DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         LocalDate fechaNacimiento = null;
         boolean valida = false;
         do {
             System.out.print(mensaje + " (dd/MM/yyyy): ");
+            String entradaFecha = Entrada.cadena();
             try {
-                fechaNacimiento = LocalDate.parse(Entrada.cadena(), DateTimeFormatter.ofPattern(Alumno.FORMATO_FECHA));
-                Alumno alumnoFecha = new Alumno(ALUMNOGUIA.getNombre(),ALUMNOGUIA.getDni(), ALUMNOGUIA.getCorreo(), ALUMNOGUIA.getTelefono(), fechaNacimiento);
+                // Validar si la entrada es nula o vacía
+                if (entradaFecha == null || entradaFecha.isBlank()) {
+                    throw new IllegalArgumentException("ERROR: La fecha de nacimiento no puede ser nula ni estar vacía.");
+                }
+                // Convertir la fecha al formato `LocalDate`
+                fechaNacimiento = LocalDate.parse(entradaFecha, DateTimeFormatter.ofPattern(Alumno.FORMATO_FECHA));
+                // Intentar crear un alumno ficticio para validar la fecha usando `setFechaNacimiento`
+                new Alumno(ALUMNO_GUIA.getNombre(), ALUMNO_GUIA.getDni(), ALUMNO_GUIA.getCorreo(), ALUMNO_GUIA.getTelefono(), fechaNacimiento);
                 valida = true;
+            } catch (DateTimeParseException e) {
+                System.out.println("ERROR: El formato de la fecha no es válido. Use el formato dd/MM/yyyy.");
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
@@ -193,7 +196,7 @@ public class Consola {
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             } catch (Exception e) {
-                System.out.println("ERROR: Entrada no válida. Por favor, introduce un número.");
+                System.out.println("ERROR: Entrada no válida.");
             }
         } while (!valido);
         return grados[opcion];
@@ -278,20 +281,33 @@ public class Consola {
         return new CicloFormativo(codigo, familiaProfesional, grado, nombre, horas);
     }
 
-    public static void mostrarCiclosFormativos(CiclosFormativos ciclosFormativos) {
-        if (ciclosFormativos == null || ciclosFormativos.getTamano() == 0) {
+    public static void mostrarCiclosFormativos(CicloFormativo[] ciclosFormativos) {
+        if (ciclosFormativos == null || ciclosFormativos.length == 0) {
             System.out.println("No hay ciclos formativos registrados en el sistema.");
             return;
         }
         System.out.println("Listado de ciclos formativos registrados:");
-        for (CicloFormativo ciclo : ciclosFormativos.get()) {
+        for (CicloFormativo ciclo : ciclosFormativos) {
             System.out.println(ciclo);
         }
     }
 
     public static CicloFormativo getCicloFormativoPorCodigo() {
-        System.out.print("Introduce el código del ciclo formativo: ");
-        int codigo = Entrada.entero();
+        boolean valido = false;
+        int codigo = 0;
+        CicloFormativo validarCiclo = null;
+        do {
+            try {
+                System.out.print("Introduce el código del ciclo formativo: ");
+                codigo = Entrada.entero();
+                validarCiclo =new CicloFormativo(codigo, "Ficticia", Grado.GDCFGM, "Ficticio", 1000);
+                valido = true;
+            }catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                valido=false;
+            }
+
+        } while (!valido);
         return new CicloFormativo(codigo, "Ficticia", Grado.GDCFGM, "Ficticio", 1000);
     }
 
@@ -348,7 +364,10 @@ public class Consola {
     }
 
     //ASIGNATURA
-    public static Asignatura leerAsignatura(CiclosFormativos ciclosFormativos) {
+    public static Asignatura leerAsignatura(CicloFormativo cicloFormativo) {
+        if (cicloFormativo == null) {
+            throw new IllegalArgumentException("ERROR: El ciclo formativo no puede ser nulo.");
+        }
         final CicloFormativo CICLO_FORMATIVO_GUIA = new CicloFormativo(1234, "Informática", Grado.GDCFGM, "Informática", 1000);
 
         final Asignatura ASIGNATURA_GUIA = new Asignatura("1234", "Matemáticas", 200, Curso.PRIMERO, 5,
@@ -435,33 +454,7 @@ public class Consola {
         // Validar especialidad del profesorado
         especialidad = leerEspecialidadProfesorado();
 
-        // Validar ciclo formativo
-        valido = false;
-        ciclo = null;
-
-        do {
-            try {
-                // Pedir el código del ciclo formativo
-                CicloFormativo cicloFormativoTemporal = Consola.getCicloFormativoPorCodigo();
-
-                // Intentar crear un CicloFormativo temporal para validar el código
-                ciclo = new CicloFormativo(cicloFormativoTemporal.getCodigo(), "Ficticio", Grado.GDCFGM, "Ficticio", 1000);
-
-                // Buscar el ciclo formativo en la colección
-                ciclo = ciclosFormativos.buscar(ciclo);
-                if (ciclo == null) {
-                    // Si no encuentra el ciclo, imprimir mensaje y volver al menú
-                    System.out.println("ERROR: No se ha encontrado un ciclo formativo con el código proporcionado. Introduce antes dicho ciclo formativo o crea una asignatura con un ciclo formativo existente.");
-                    return null;
-                }
-
-                valido = true; // Si no lanza excepción, el ciclo es válido
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage()); // Mostrar el error al usuario
-            }
-        } while (!valido);
-
-        return new Asignatura(codigo, nombre, horasAnuales, curso, horasDesdoble, especialidad, ciclo);
+        return new Asignatura(codigo, nombre, horasAnuales, curso, horasDesdoble, especialidad, cicloFormativo);
     }
 
     public static Asignatura getAsignaturaPorCodigo() {
@@ -482,18 +475,18 @@ public class Consola {
         return new Asignatura(codigo, "Ficticia", 100, Curso.PRIMERO, 5, EspecialidadProfesorado.INFORMATICA, new CicloFormativo(1234, "Ficticio", Grado.GDCFGM, "Grado Medio", 1000));
     }
 
-    public static void mostrarAsignaturas(Asignaturas asignaturas) {
-        if (asignaturas == null || asignaturas.getTamano() == 0) {
+    private static void mostrarAsignaturas(Asignatura[] asignaturas) {
+        if (asignaturas == null || asignaturas.length == 0) {
             System.out.println("No hay asignaturas registradas en el sistema.");
             return;
         }
         System.out.println("Listado de asignaturas registradas:");
-        for (Asignatura asignatura : asignaturas.get()) {
+        for (Asignatura asignatura : asignaturas) {
             System.out.println(asignatura);
         }
     }
 
-    private static boolean asignaturaYaMatriculada(Asignatura[] asignaturasMatricula, Asignatura asignatura) {
+    static boolean asignaturaYaMatriculada(Asignatura[] asignaturasMatricula, Asignatura asignatura) {
         for (Asignatura asign : asignaturasMatricula) {
             if (asign != null && asign.equals(asignatura)) {
                 return true;
@@ -502,17 +495,26 @@ public class Consola {
         return false;
     }
 
-    public static Matricula leerMatricula(Alumnos alumnos, Asignaturas asignaturas) throws OperationNotSupportedException {
+    public static Matricula leerMatricula(Alumno alumno, Asignatura[] asignaturas) throws OperationNotSupportedException {
         final Matricula MATRICULA_GUIA = new Matricula(1, "23-24", LocalDate.now(),
                 new Alumno("Carlos", "12345678Z", "carlos.perez@gmail.com", "612345678", LocalDate.of(2000, 1, 1)),
                 new Asignatura[0]);
 
-        Alumno alumno = null;
+        if (alumno == null) {
+            System.out.println("ERROR: El alumno no puede ser nulo.");
+            return null;
+        }
+
+        if (asignaturas == null || asignaturas.length == 0) {
+            System.out.println("ERROR: Debes proporcionar al menos una asignatura.");
+            return null;
+        }
+
         int idMatricula = 0;
         LocalDate fechaMatriculacion = null;
         LocalDate fechaAnulacion = null;
 
-        // Validar el DNI del alumno y verificar si existe en la colección
+        /* Validar el DNI del alumno y verificar si existe en la colección
         boolean valido = false;
         do {
             try {
@@ -525,10 +527,10 @@ public class Consola {
             } catch (IllegalArgumentException e) {
                 System.out.println("ERROR: " + e.getMessage());
             }
-        } while (!valido);
+        } while (!valido); */
 
         // Validar el ID de matrícula
-        valido = false;
+       boolean valido = false;
         do {
             System.out.print("Introduce el identificador de la matrícula: ");
             try {
@@ -536,8 +538,6 @@ public class Consola {
                 if (idMatricula <= 0) {
                     throw new IllegalArgumentException("ERROR: El identificador de la matrícula debe ser un número positivo.");
                 }
-                Matricula matriculaTemporal = new Matricula(idMatricula, MATRICULA_GUIA.getCursoAcademico(),
-                        MATRICULA_GUIA.getFechaMatriculacion(), MATRICULA_GUIA.getAlumno(), MATRICULA_GUIA.getColeccionAsignaturas());
                 valido = true;
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
@@ -564,31 +564,54 @@ public class Consola {
         } while (!valido);
 
         // Validar la fecha de anulación (opcional)
-        System.out.print("Introduce la fecha de anulación (dd/MM/yyyy) o presione Enter para omitir: ");
-        String fechaAnulacionInput = Entrada.cadena();
-        if (!fechaAnulacionInput.isBlank()) {
+        valido = false; // Variable para controlar el bucle de validación
+        do {
+            System.out.print("Introduce la fecha de anulación (dd/MM/yyyy) o presione Enter para omitir: ");
+            String fechaAnulacionInput = Entrada.cadena();
+
+            if (fechaAnulacionInput.isBlank()) {
+                // Si el usuario presiona Enter, salimos del bucle sin validar
+                valido = true;
+                fechaAnulacion = null; // Se establece como nula porque el usuario quiere omitir
+                break;
+            }
+
             try {
+                // Intentamos parsear la fecha y validarla
                 fechaAnulacion = LocalDate.parse(fechaAnulacionInput, DateTimeFormatter.ofPattern(Matricula.FORMATO_FECHA));
 
-                // Validar la fecha de anulación
+                // Crear una matrícula temporal para validar la fecha de anulación
                 Matricula matriculaTemporal = new Matricula(MATRICULA_GUIA.getIdMatricula(), MATRICULA_GUIA.getCursoAcademico(),
                         fechaMatriculacion, MATRICULA_GUIA.getAlumno(), MATRICULA_GUIA.getColeccionAsignaturas());
                 matriculaTemporal.setFechaAnulacion(fechaAnulacion);
+
+                valido = true; // Si no se lanza excepción, la fecha es válida y salimos del bucle
             } catch (DateTimeParseException e) {
                 System.out.println("ERROR: La fecha no tiene un formato válido. Use el formato dd/MM/yyyy.");
-                fechaAnulacion = null; // Reset para pedir otra vez
             } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
-                fechaAnulacion = null; // Reset para pedir otra vez
+                System.out.println("ERROR: " + e.getMessage());
             }
-        }
+        } while (!valido);
+
+
         // Calcular el curso académico basado en la fecha de matriculación
         String cursoAcademico;
         int anioInicio = fechaMatriculacion.getYear();
         int anioFin = anioInicio + 1;
         cursoAcademico = String.format("%02d-%02d", anioInicio % 100, anioFin % 100);
 
-        // Validar asignaturas
+
+        // Validar y seleccionar asignaturas
+        System.out.println("Selecciona las asignaturas para la matrícula:");
+        Asignatura[] asignaturasSeleccionadas = elegirAsignaturasMatricula(asignaturas);
+
+        // Verificar si no se seleccionaron asignaturas
+        if (asignaturasSeleccionadas == null || asignaturasSeleccionadas.length == 0) {
+            System.out.println("ERROR: No se seleccionó ninguna asignatura para la matrícula.");
+            return null;
+        }
+
+        /* Validar asignaturas
         Asignatura[] asignaturasMatricula = new Asignatura[Matricula.MAXIMO_NUMERO_ASIGNATURAS_POR_MATRICULA];
         int totalHoras = 0;
         int indice = 0;
@@ -639,15 +662,65 @@ public class Consola {
         if (indice == 0) {
             System.out.println("ERROR: No se puede crear la matrícula sin ninguna asignatura.");
             return null; // Volver al menú principal
-        }
+        } */
 
         // Crear y devolver la matrícula válida
-        Matricula matricula = new Matricula(idMatricula,cursoAcademico, fechaMatriculacion, alumno, Arrays.copyOf(asignaturasMatricula, indice));
+        Matricula matricula = new Matricula(idMatricula,cursoAcademico, fechaMatriculacion, alumno, asignaturas);
         matricula.setFechaAnulacion(fechaAnulacion); // Si no se introdujo fecha de anulación, será null
         return matricula;
     }
 
+    public static Asignatura[] elegirAsignaturasMatricula(Asignatura[] asignaturas) {
+        if (asignaturas == null || asignaturas.length == 0) {
+            System.out.println("No hay asignaturas disponibles para elegir.");
+            return new Asignatura[0];
+        }
 
+        System.out.println("Listado de asignaturas disponibles:");
+        for (int i = 0; i < asignaturas.length; i++) {
+            System.out.printf("%d. %s%n", i + 1, asignaturas[i]);
+        }
+
+        Asignatura[] seleccionadas = new Asignatura[Matricula.MAXIMO_NUMERO_ASIGNATURAS_POR_MATRICULA];
+        int indiceSeleccionadas = 0;
+
+        while (indiceSeleccionadas < Matricula.MAXIMO_NUMERO_ASIGNATURAS_POR_MATRICULA) {
+            System.out.print("Introduce el número de la asignatura para añadirla a la matrícula (0 para finalizar): ");
+            try {
+                int opcion = Entrada.entero();
+
+                if (opcion == 0) {
+                    break; // Finaliza si el usuario introduce 0
+                }
+
+                if (opcion < 1 || opcion > asignaturas.length) {
+                    System.out.println("ERROR: Selección no válida. Introduce un número entre 1 y " + asignaturas.length + ".");
+                    continue;
+                }
+
+                Asignatura asignaturaSeleccionada = asignaturas[opcion - 1];
+
+                if (asignaturaYaMatriculada(seleccionadas, asignaturaSeleccionada)) {
+                    System.out.println("ERROR: La asignatura ya ha sido seleccionada.");
+                    continue;
+                }
+
+                seleccionadas[indiceSeleccionadas] = asignaturaSeleccionada;
+                indiceSeleccionadas++;
+                System.out.println("Asignatura añadida: " + asignaturaSeleccionada);
+
+            } catch (Exception e) {
+                System.out.println("ERROR: Entrada no válida. Debes introducir un número.");
+            }
+        }
+
+        if (indiceSeleccionadas == 0) {
+            System.out.println("No se seleccionó ninguna asignatura.");
+            return new Asignatura[0];
+        }
+
+        return Arrays.copyOf(seleccionadas, indiceSeleccionadas);
+    }
 
     public static Matricula getMatriculaPorIdentificador() {
         int idMatricula = 0;
