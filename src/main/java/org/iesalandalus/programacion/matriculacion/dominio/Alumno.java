@@ -27,12 +27,11 @@ public class Alumno {
     //8-Constructor con parámetros (crea un alummno con todos sus datos)
     public Alumno(String nombre, String dni, String correo, String telefono, LocalDate fechaNacimiento){
         //Asignación a través de setters para validar los datos
-        setNombre(nombre);
         setDni(dni);
+        setNombre(nombre);
         setCorreo(correo);
         setTelefono(telefono);
         setFechaNacimiento(fechaNacimiento);
-        setNia();
     }
 
     //9-Constructor copia con parámetros (crea un alummno copiando otro)
@@ -41,12 +40,11 @@ public class Alumno {
             throw new NullPointerException("ERROR: No es posible copiar un alumno nulo."); //5-Excepción nulo
         }
         //Asignación de valores a través de getters (que devuelven el valor actual de cada uno) copiando los datos validados
-        setNombre(alumno.getNombre());
         setDni(alumno.getDni());
+        setNombre(alumno.getNombre());
         setCorreo(alumno.getCorreo());
         setTelefono(alumno.getTelefono());
         setFechaNacimiento(alumno.getFechaNacimiento());
-        setNia(alumno.getNia());
     }
 
     //5-Métodos de acceso y modificación (getters y setters)
@@ -104,7 +102,7 @@ public class Alumno {
             throw new IllegalArgumentException("ERROR: El nombre de un alumno no puede estar vacío."); // Error si el nombre está vacío
         }
         this.nombre = formateaNombre(nombre); // Normaliza el formato del nombre
-         // Recalcula automáticamente el NIA tras cambiar el nombre
+        setNia();
     }
     // Normaliza el formato del nombre
     private String formateaNombre(String nombre){
