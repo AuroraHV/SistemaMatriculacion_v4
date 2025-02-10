@@ -4,7 +4,6 @@ import org.iesalandalus.programacion.matriculacion.controlador.Controlador;
 import org.iesalandalus.programacion.matriculacion.modelo.Modelo;
 import org.iesalandalus.programacion.matriculacion.vista.Vista;
 
-
 public class MainApp {
 
     public static void main(String[] args) {
