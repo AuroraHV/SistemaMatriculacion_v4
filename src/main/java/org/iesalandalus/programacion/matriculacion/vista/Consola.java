@@ -172,12 +172,12 @@ public class Consola {
         return fechaNacimiento;
     }
 
-    public static Grado leerGrado() {
-        System.out.println("Grados disponibles:");
+    public static TiposGrado leerTiposGrado() {
+        System.out.println("Tipos de grados disponibles:");
 
         int index = 0;
-        for (Grado grado : Grado.values()) {
-            System.out.printf("%d. %s%n", index, grado);
+        for (TiposGrado tiposGrado : TiposGrado.values()) {
+            System.out.printf("%d. %s%n", index, tiposGrado);
             index++;
         }
 
@@ -185,10 +185,10 @@ public class Consola {
         boolean valido = false;
         do {
             try {
-                System.out.print("Elige un grado (introduce el número correspondiente): ");
+                System.out.print("Elige un tipo de grado (introduce el número correspondiente): ");
                 opcion = Entrada.entero();
 
-                if (opcion < 0 || opcion >= Grado.values().length) {
+                if (opcion < 0 || opcion >= TiposGrado.values().length) {
                     throw new IllegalArgumentException("ERROR: Debes elegir un número dentro del rango de opciones.");
                 }
                 valido = true;
@@ -198,15 +198,44 @@ public class Consola {
                 System.out.println("ERROR: Entrada no válida.");
             }
         } while (!valido);
-        return Grado.values()[opcion];
+        return TiposGrado.values()[opcion];
+    }
+
+    public static Modalidad leerModalidad() {
+        System.out.println("Modalidades disponibles:");
+
+        int index = 0;
+        for (Modalidad modalidad : Modalidad.values()) {
+            System.out.printf("%d. %s%n", index, modalidad);
+            index++;
+        }
+
+        int opcion = -1;
+        boolean valido = false;
+        do {
+            try {
+                System.out.print("Elige una modalidad (introduce el número correspondiente): ");
+                opcion = Entrada.entero();
+
+                if (opcion < 0 || opcion >= Modalidad.values().length) {
+                    throw new IllegalArgumentException("ERROR: Debes elegir un número dentro del rango de opciones.");
+                }
+                valido = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            } catch (Exception e) {
+                System.out.println("ERROR: Entrada no válida.");
+            }
+        } while (!valido);
+        return Modalidad.values()[opcion];
     }
 
     public static CicloFormativo leerCicloFormativo() {
         int codigo = 0;
         String familiaProfesional = null;
+        Grado grado = new GradoD("grado ficticio", 2, Modalidad.PRESENCIAL);
         String nombre = null;
         int horas = 0;
-        Grado grado = null;
 
         // Validación del código
         boolean valido = false;
@@ -279,9 +308,55 @@ public class Consola {
         return new CicloFormativo(codigo, familiaProfesional, grado, nombre, horas);
     }
 
+    public static Grado leerGrado() {
+        TiposGrado tiposGrado = leerTiposGrado();
+        String nombre = "";
+        do {
+            System.out.print("Introduce el nombre del grado: ");
+            nombre = Entrada.cadena();
+            if (nombre == null || nombre.isBlank()) {
+                System.out.println("ERROR: El nombre del grado no puede ser nulo o vacío.");
+            }
+        } while (nombre == null || nombre.isBlank());
+
+        int numAnios = -1;
+        boolean valido = false;
+        do {
+            System.out.print("Introduce el número de años del grado: ");
+            numAnios = Entrada.entero();
+            if (tiposGrado == TiposGrado.GRADOD && (numAnios < 2 || numAnios > 3)) {
+                System.out.println("ERROR: El número de años para un Grado D debe ser 2 o 3.");
+            } else if (tiposGrado == TiposGrado.GRADOE && numAnios != 1) {
+                System.out.println("ERROR: El número de años para un Grado E debe ser 1.");
+            } else {
+                valido = true;
+            }
+        } while (!valido);
+
+
+        if (tiposGrado == TiposGrado.GRADOD) {
+            Modalidad modalidad = leerModalidad();
+            return new GradoD(nombre, numAnios, modalidad);
+        } else {
+            int numEdiciones = -1;
+            boolean validoEdiciones = false;
+            do {
+                System.out.print("Introduce el número de ediciones: ");
+                numEdiciones = Entrada.entero();
+                if (numEdiciones < 1) {
+                    System.out.println("ERROR: El número de ediciones debe ser mayor o igual a 1.");
+                } else {
+                    validoEdiciones = true;
+                }
+            } while (!validoEdiciones);
+            return new GradoE(nombre, numAnios, numEdiciones);
+        }
+    }
+
     public static void mostrarCiclosFormativos(ArrayList<CicloFormativo> ciclosFormativos) {
         if (ciclosFormativos == null || ciclosFormativos.isEmpty()) {
             System.out.println("No hay ciclos formativos disponibles para asociar a la asignatura.");
+            return;
         }
 
         System.out.println("Selecciona un ciclo formativo:");
@@ -293,12 +368,13 @@ public class Consola {
     public static CicloFormativo getCicloFormativoPorCodigo() {
         boolean valido = false;
         int codigo = 0;
+        Grado grado = new GradoD("grado ficticio", 2, Modalidad.PRESENCIAL);
         CicloFormativo validarCiclo = null;
         do {
             try {
                 System.out.print("Introduce el código del ciclo formativo: ");
                 codigo = Entrada.entero();
-                validarCiclo =new CicloFormativo(codigo, "Ficticia", Grado.GDCFGM, "Ficticio", 1000);
+                validarCiclo =new CicloFormativo(codigo, "Ficticia", grado, "Ficticio", 1000);
                 valido = true;
             }catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
@@ -306,7 +382,7 @@ public class Consola {
             }
 
         } while (!valido);
-        return new CicloFormativo(codigo, "Ficticia", Grado.GDCFGM, "Ficticio", 1000);
+        return new CicloFormativo(codigo, "Ficticia", grado, "Ficticio", 1000);
     }
 
     public static Curso leerCurso() {
@@ -363,10 +439,11 @@ public class Consola {
 
     //ASIGNATURA
     public static Asignatura leerAsignatura(CicloFormativo cicloFormativo) {
+        Grado grado = new GradoD("grado ficticio", 2, Modalidad.PRESENCIAL);
         if (cicloFormativo == null) {
             throw new IllegalArgumentException("ERROR: El ciclo formativo no puede ser nulo.");
         }
-        final CicloFormativo CICLO_FORMATIVO_GUIA = new CicloFormativo(1234, "Informática", Grado.GDCFGM, "Informática", 1000);
+        final CicloFormativo CICLO_FORMATIVO_GUIA = new CicloFormativo(1234, "Informática", grado, "Informática", 1000);
 
         final Asignatura ASIGNATURA_GUIA = new Asignatura("1234", "Matemáticas", 200, Curso.PRIMERO, 5,
                 EspecialidadProfesorado.INFORMATICA, CICLO_FORMATIVO_GUIA);
@@ -458,6 +535,8 @@ public class Consola {
     public static Asignatura getAsignaturaPorCodigo() {
         String codigo = null;
         boolean valido = false;
+        Grado grado = new GradoD("ficticio", 2 , Modalidad.PRESENCIAL);
+        CicloFormativo cicloFormativo = new CicloFormativo(1234, "ficticio", grado, "ficticio", 1000);
         do {
             System.out.print("Introduce el código de la asignatura (4 dígitos): ");
             try {
@@ -470,7 +549,7 @@ public class Consola {
                 System.out.println(e.getMessage());
             }
         } while (!valido);
-        return new Asignatura(codigo, "Ficticia", 100, Curso.PRIMERO, 5, EspecialidadProfesorado.INFORMATICA, new CicloFormativo(1234, "Ficticio", Grado.GDCFGM, "Grado Medio", 1000));
+        return new Asignatura(codigo, "Ficticia", 100, Curso.PRIMERO, 5, EspecialidadProfesorado.INFORMATICA, new CicloFormativo(1234, "Ficticio", grado, "Grado Medio", 1000));
     }
 
     private static void mostrarAsignaturas(ArrayList<Asignatura> asignaturas) {
@@ -484,7 +563,7 @@ public class Consola {
         }
     }
 
-    static boolean asignaturaYaMatriculada(ArrayList<Asignatura> asignaturasMatricula, Asignatura asignatura) {
+    private static boolean asignaturaYaMatriculada(ArrayList<Asignatura> asignaturasMatricula, Asignatura asignatura) {
         for (Asignatura asign : asignaturasMatricula) {
             if (asign != null && asign.equals(asignatura)) {
                 return true;
@@ -650,6 +729,7 @@ public class Consola {
     }
 
     public static Matricula getMatriculaPorIdentificador() {
+        Grado grado = new GradoD("grado ficticio", 2, Modalidad.PRESENCIAL);
         int idMatricula = 0;
         boolean valido = false;
 
@@ -672,7 +752,7 @@ public class Consola {
 
             ArrayList<Asignatura> asignaturasFicticias = new ArrayList<>();
             asignaturasFicticias.add(new Asignatura("1234", "Ficticia", 200, Curso.PRIMERO, 5, EspecialidadProfesorado.INFORMATICA,
-                    new CicloFormativo(1234, "Ficticio", Grado.GDCFGM, "Grado Medio", 1000)));
+                    new CicloFormativo(1234, "Ficticio", grado, "Grado Medio", 1000)));
 
             return new Matricula(idMatricula, "23-24", LocalDate.now(), alumnoFicticio, asignaturasFicticias);
         } catch (Exception e) {
