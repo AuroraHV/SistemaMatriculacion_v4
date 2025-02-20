@@ -1,37 +1,45 @@
 package org.iesalandalus.programacion.matriculacion.dominio;
 
-public enum Grado {
+public abstract class Grado {
 
-    //1-Enumerado con valores
-    GDCFGB("Grado Básico"),
-    GDCFGM("Grado Medio"),
-    GDCFGS("Grado Superior");
+    protected String nombre;
+    protected String iniciales;
+    protected int numAnios;
 
-    //2-Atributo
-    private String cadenaAMostrar;
-
-    //3-Constructor
-    private Grado(String cadenaAMostrar) {
-        this.cadenaAMostrar = cadenaAMostrar;
+    public Grado(String nombre){
+        setNombre(nombre);
     }
 
-    //4-Método imprimir
-    public String imprimir() {
-        if (this == GDCFGB) {
-            return "0.-" + this.cadenaAMostrar;
-        } else if (this == GDCFGM) {
-            return "1.-" + this.cadenaAMostrar;
-        } else if (this == GDCFGS) {
-            return "2.-" + this.cadenaAMostrar;
-        } else {
-            throw new IllegalArgumentException("Grado no reconocido");
+    public String getNombre() {
+        return nombre;
+    }
+
+   protected void setNombre(String nombre) {
+       if (nombre == null) {
+           throw new NullPointerException("ERROR: El nombre de un grado no puede ser nulo.");
+       }
+       if (nombre.isBlank()) {
+           throw new IllegalArgumentException("ERROR: El nombre de un grado no puede estar vacío.");
+       }
+       if (nombre.isEmpty()) {
+           throw new IllegalArgumentException("ERROR: El nombre de un grado no puede estar vacío.");
+       }
+       this.nombre = nombre;
+       setIniciales();
+   }
+
+    private void setIniciales() {
+        String[] palabras = nombre.split("[ ]+");
+        String iniciales = "";
+        for (String palabra : palabras) {
+            iniciales += palabra.charAt(0);
         }
+        this.iniciales = iniciales.toUpperCase();
     }
 
-    //5-Representación en texto de los valores
-    @Override
+    public abstract void setNumAnios(int numAnios);
+
     public String toString() {
-        return this.cadenaAMostrar;
+        return "(" + iniciales + ") - " + nombre;
     }
-
 }
