@@ -66,10 +66,11 @@ public class Alumno {
             if (!nia.matches(ER_NIA)) {
                 throw new IllegalArgumentException("ERROR: El NIA generado no tiene un formato válido."); // Error si el NIA no cumple el formato
             }
+            setNia(nia);
         } else {
             throw new NullPointerException("ERROR: No se puede generar el NIA sin nombre y DNI."); // Error si faltan nombre o DNI
         }
-    }
+            }
     // Segundo setNia (permite asignar manualmente un NIA validado)
     private void setNia(String nia) {
         if (nia == null) {
@@ -172,6 +173,7 @@ public class Alumno {
             throw new IllegalArgumentException("ERROR: El dni del alumno no tiene un formato válido.");
         if(dni.isEmpty())
             throw new IllegalArgumentException("ERROR: El dni del alumno no tiene un formato válido.");
+        dni = dni.toUpperCase();
         if (!dni.matches(ER_DNI))
             throw new IllegalArgumentException("ERROR: El dni del alumno no tiene un formato válido.");
         if (!comprobarLetraDni(dni)) {
