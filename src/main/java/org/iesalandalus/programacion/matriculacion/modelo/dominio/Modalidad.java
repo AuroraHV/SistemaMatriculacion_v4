@@ -1,5 +1,9 @@
-package org.iesalandalus.programacion.matriculacion.dominio;
+package org.iesalandalus.programacion.matriculacion.modelo.dominio;
 
+/**
+ * Enumeración que representa las diferentes modalidades de un grado.
+ * Existen dos modalidades: presencial y semipresencial.
+ */
 public enum Modalidad {
 
     PRESENCIAL ("Presencial"),

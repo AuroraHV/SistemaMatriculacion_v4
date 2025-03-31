@@ -1,28 +1,47 @@
-package org.iesalandalus.programacion.matriculacion.negocio;
+package org.iesalandalus.programacion.matriculacion.modelo.negocio.memoria;
 
-import org.iesalandalus.programacion.matriculacion.dominio.Alumno;
-import org.iesalandalus.programacion.matriculacion.dominio.Asignatura;
-import org.iesalandalus.programacion.matriculacion.dominio.CicloFormativo;
-import org.iesalandalus.programacion.matriculacion.dominio.Matricula;
+import org.iesalandalus.programacion.matriculacion.modelo.dominio.Alumno;
+import org.iesalandalus.programacion.matriculacion.modelo.dominio.Asignatura;
+import org.iesalandalus.programacion.matriculacion.modelo.dominio.CicloFormativo;
+import org.iesalandalus.programacion.matriculacion.modelo.dominio.Matricula;
+import org.iesalandalus.programacion.matriculacion.modelo.negocio.IMatriculas;
+
 import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
 
+/**
+ * Clase que gestiona una colección de matrículas.
+ * Permite insertar, buscar, borrar y obtener información sobre las matrículas,
+ * así como filtrarlas por alumno, curso académico o ciclo formativo.
+ */
+public class Matriculas implements IMatriculas {
 
-public class Matriculas{
-    //1-Atributos
     private ArrayList<Matricula> coleccionMatriculas;
 
-    //1.1-Constructor con lista de capacidad e inicializa atributos
+    /**
+     * Constructor de la clase Matriculas.
+     * Inicializa la colección con la capacidad.
+     */
     public Matriculas() {
         this.coleccionMatriculas= new ArrayList<>();
     }
 
-    //Métodos
-    //1.2-Get que devuelve copia profunda
+    /**
+     * Obtiene una copia profunda de la colección de matrículas.
+     *
+     * @return Un arreglo con una copia de las matrículas.
+     * @throws OperationNotSupportedException Si no se puede copiar la colección.
+     */
     public ArrayList<Matricula> get() throws OperationNotSupportedException {
         return copiaProfundaMatriculas();
     }
-    //Copia profunda de la colección
+
+    /**
+     * Realiza una copia profunda de las matrículas almacenadas en la colección.
+     *
+     * @return Un arreglo con las matrículas copiadas.
+     * @throws OperationNotSupportedException Si no se puede copiar la colección.
+     */
     private ArrayList<Matricula> copiaProfundaMatriculas() throws OperationNotSupportedException {
         ArrayList<Matricula> copiaMatriculas= new ArrayList<>();
         for (Matricula m : coleccionMatriculas) {
@@ -30,11 +49,32 @@ public class Matriculas{
         }
         return copiaMatriculas;
     }
+
+    @Override
+    public void comenzar() {
+    }
+
+    @Override
+    public void terminar() {
+    }
+
+    /**
+     * Obtiene el tamaño actual de la colección (número de matrículas almacenadas).
+     *
+     * @return El tamaño actual de la colección.
+     */
     public int getTamano() {
         return this.coleccionMatriculas.size();
     }
 
-    //1.3-Insertar matrícula al final de la colección mientras no esté repetido o sea nulo
+    /**
+     * Inserta una matrícula en la colección.
+     *
+     * @param matricula La matrícula a insertar.
+     * @throws OperationNotSupportedException Si no se pueden insertar más matrículas
+     *         o si ya existe una matrícula con el mismo identificador.
+     * @throws NullPointerException Si la matrícula es nula.
+     */
     public void insertar(Matricula matricula) throws OperationNotSupportedException {
         if (matricula == null) {
             throw new NullPointerException("ERROR: No se puede insertar una matrícula nula.");
@@ -47,7 +87,14 @@ public class Matriculas{
         }
     }
 
-    //1.4-Buscar una matrícula y devolverla si está en la colección, en caso contrario será null
+    /**
+     * Busca una matrícula en la colección.
+     *
+     * @param matricula La matrícula a buscar.
+     * @return La matrícula encontrada o null si no se encuentra.
+     * @throws OperationNotSupportedException Si no se puede buscar la matrícula.
+     * @throws NullPointerException Si la matrícula es nula.
+     */
     public Matricula buscar(Matricula matricula) throws OperationNotSupportedException {
         if (matricula == null) {
             throw new NullPointerException("ERROR: No se puede buscar una matrícula nula.");
@@ -60,7 +107,13 @@ public class Matriculas{
         }
     }
 
-    //1.5-Si un alumno se encuentra en la colección, se borra
+    /**
+     * Borra una matrícula de la colección.
+     *
+     * @param matricula La matrícula a borrar.
+     * @throws OperationNotSupportedException Si no existe la matrícula a borrar.
+     * @throws NullPointerException Si la matrícula es nula.
+     */
     public void borrar(Matricula matricula) throws OperationNotSupportedException {
         if (matricula == null) {
             throw new NullPointerException("ERROR: No se puede borrar una matrícula nula.");
@@ -72,7 +125,13 @@ public class Matriculas{
         this.coleccionMatriculas.remove(indice);
     }
 
-    //2-Devuelve colección de matriculas de un alumno
+    /**
+     * Obtiene las matrículas asociadas a un alumno específico.
+     *
+     * @param alumno El alumno del cual obtener las matrículas.
+     * @return Un array con las matrículas del alumno.
+     * @throws OperationNotSupportedException Si no se pueden obtener las matrículas.
+     */
     public ArrayList<Matricula> get(Alumno alumno) throws OperationNotSupportedException {
         ArrayList<Matricula> aux = new ArrayList<>();
         for (Matricula matricula : coleccionMatriculas) {
@@ -83,7 +142,13 @@ public class Matriculas{
         return aux;
     }
 
-    //2-Devuelve colección de matriculas de curso académico
+    /**
+     * Obtiene las matrículas asociadas a un curso académico específico.
+     *
+     * @param cursoAcademico El curso académico del cual obtener las matrículas.
+     * @return Un array con las matrículas del curso académico.
+     * @throws OperationNotSupportedException Si no se pueden obtener las matrículas.
+     */
     public ArrayList<Matricula> get(String cursoAcademico) throws OperationNotSupportedException {
         ArrayList<Matricula> aux = new ArrayList<>();
         for (Matricula matricula : coleccionMatriculas) {
@@ -91,10 +156,16 @@ public class Matriculas{
                 aux.add(new Matricula(matricula));
             }
         }
-
         return aux;
     }
-    //2-Devuelve colección de matriculas de ciclo formativo
+
+    /**
+     * Obtiene las matrículas asociadas a un ciclo formativo específico.
+     *
+     * @param cicloFormativo El ciclo formativo del cual obtener las matrículas.
+     * @return Un arreglo con las matrículas del ciclo formativo.
+     * @throws OperationNotSupportedException Si no se pueden obtener las matrículas.
+     */
     public ArrayList<Matricula> get(CicloFormativo cicloFormativo) throws OperationNotSupportedException {
         ArrayList<Matricula> aux = new ArrayList<>();
         for(Matricula matricula: coleccionMatriculas){

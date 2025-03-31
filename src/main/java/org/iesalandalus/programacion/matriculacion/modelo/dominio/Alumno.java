@@ -1,4 +1,4 @@
-package org.iesalandalus.programacion.matriculacion.dominio; //1-paquete
+package org.iesalandalus.programacion.matriculacion.modelo.dominio; //1-paquete
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -6,17 +6,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//1-Clase alumno
+/**
+ * Clase que representa un alumno con atributos como nombre, DNI, correo,
+ * teléfono, fecha de nacimiento y un identificador único (NIA).
+ *
+ * Permite validar los datos y realizar operaciones comunes sobre un alumno.
+ */
 public class Alumno {
-    //2-Constantes (valores fijos para validaciones o formatos)
-    private static final String ER_TELEFONO = "[96][0-9]{8}"; //5-Teléfono fijo o móvil
+    //Constantes (valores fijos para validaciones o formatos
+    private static final String ER_TELEFONO = "[976][0-9]{8}"; //5-Teléfono fijo o móvil
     private static final String ER_CORREO = "\\w+[\\.\\w]*@\\w+[\\.\\w]*\\.\\w{2,5}\\b\\s?";
     private static final String ER_DNI = "([0-9]{8})([A-Za-z])"; //5-Correo con formato
     public static final String FORMATO_FECHA = "dd/MM/yyyy"; //2-Formato fecha dd/MM/YYYY
     private static final String ER_NIA = "[a-zéáíóú]{4}[0-9]{3}"; //5-4 del nombre en minúscula y 3 últimos del DNI
     private static final int MIN_EDAD_ALUMNADO = 16; //6-Edad mínima 16 años
 
-    //2-Atributos (datos alumno)
+    //Atributos (datos alumno)
     private String nombre;
     private String telefono;
     private String correo;
@@ -24,7 +29,7 @@ public class Alumno {
     private LocalDate fechaNacimiento;
     private String nia;
 
-    //8-Constructor con parámetros (crea un alummno con todos sus datos)
+    //Constructor con parámetros (crea un alummno con todos sus datos)
     public Alumno(String nombre, String dni, String correo, String telefono, LocalDate fechaNacimiento){
         //Asignación a través de setters para validar los datos
         setDni(dni);
@@ -34,10 +39,10 @@ public class Alumno {
         setFechaNacimiento(fechaNacimiento);
     }
 
-    //9-Constructor copia con parámetros (crea un alummno copiando otro)
+    //Constructor copia con parámetros (crea un alummno copiando otro)
     public Alumno(Alumno alumno) {
         if(alumno == null) {
-            throw new NullPointerException("ERROR: No es posible copiar un alumno nulo."); //5-Excepción nulo
+            throw new NullPointerException("ERROR: No es posible copiar un alumno nulo.");
         }
         //Asignación de valores a través de getters (que devuelven el valor actual de cada uno) copiando los datos validados
         setDni(alumno.getDni());
@@ -47,7 +52,7 @@ public class Alumno {
         setFechaNacimiento(alumno.getFechaNacimiento());
     }
 
-    //5-Métodos de acceso y modificación (getters y setters)
+    //Métodos de acceso y modificación (getters y setters)
 
         //Nia
     public String getNia() {
@@ -182,7 +187,7 @@ public class Alumno {
         this.dni = dni;
          // Recalcula automáticamente el NIA tras cambiar el DNI
     }
-    //4-Comprobar letra DNI
+    //Comprobar letra DNI
     private boolean comprobarLetraDni(String dni) {
         if(dni==null)
             throw new NullPointerException("ERROR: El DNI no puede ser nulo.");
@@ -211,7 +216,7 @@ public class Alumno {
         }
     }
 
-        //7-Fecha de nacimiento (validar mayor de 16 años)
+        //Fecha de nacimiento (validar mayor de 16 años)
     public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
@@ -237,7 +242,7 @@ public class Alumno {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    //6-Iniciales nombre
+    //Iniciales nombre
     public String getIniciales() {
         StringBuilder iniciales = new StringBuilder();
         for (String palabra : nombre.trim().split("\\s+")) {
@@ -246,14 +251,14 @@ public class Alumno {
         return iniciales.toString().toUpperCase(); // Devuelve las iniciales en mayúsculas
     }
 
-    //10.1-Equals para comparar si dos alumnos son iguales, si tienen el mismo DNI
+    //Equals para comparar si dos alumnos son iguales, si tienen el mismo DNI
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Alumno alumno)) return false;
         return Objects.equals(dni, alumno.dni);
     }
-    //10.2-HashCode para optimizar la búsqueda y organización, en base al dni
+    //HashCode para optimizar la búsqueda y organización, en base al dni
     @Override
     public int hashCode() {
         return Objects.hash(dni);
@@ -270,7 +275,7 @@ public class Alumno {
                 ", NIA=" + nia;
     }
 
-    //11-Representación en texto para mostrar los atributos especificados en un sout (que devuelvan la cadena)
+    //Representación en texto para mostrar los atributos especificados en un sout (que devuelvan la cadena)
     @Override
     public String toString() {
         return "Número de Identificación del Alumnado " +

@@ -1,5 +1,9 @@
-package org.iesalandalus.programacion.matriculacion.dominio;
+package org.iesalandalus.programacion.matriculacion.modelo.dominio;
 
+/**
+ * Enumeración que representa los diferentes tipos de grados disponibles en el sistema.
+ * Existen dos tipos de grados: grado D y grado E.
+ */
 public enum TiposGrado {
 
     GRADOD("Grado D"),
@@ -30,6 +34,4 @@ public enum TiposGrado {
     public String toString() {
         return cadenaAMostrar;
     }
-
-
 }

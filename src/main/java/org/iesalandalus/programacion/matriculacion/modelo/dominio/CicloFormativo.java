@@ -1,19 +1,22 @@
-package org.iesalandalus.programacion.matriculacion.dominio;
+package org.iesalandalus.programacion.matriculacion.modelo.dominio;
 
 import java.util.Objects;
 
-//1-Clase CicloFormativo
+/**
+ * Clase que representa un Ciclo Formativo con su información básica como código,
+ * familia profesional, grado, nombre y horas.
+ */
 public class CicloFormativo {
-    //2.1-Constantes
+    //Constantes
     public static final int MAXIMO_NUMERO_HORAS = 2000;
-    //2.2-Atributos
+    //Atributos
     private int codigo;
     private String familiaProfesional;
     private Grado grado;
     private String nombre;
     private int horas;
 
-    //3-Constructor con parámetros
+    //Constructor con parámetros
     public CicloFormativo(int codigo, String familiaProfesional, Grado grado, String nombre, int horas) {
         setCodigo(codigo);
         setFamiliaProfesional(familiaProfesional);
@@ -22,7 +25,7 @@ public class CicloFormativo {
         setHoras(horas);
     }
 
-    //4-Constructor copia
+    //Constructor copia
     public CicloFormativo(CicloFormativo cicloFormativo) {
         if (cicloFormativo == null) {
             throw new NullPointerException("ERROR: No es posible copiar un ciclo formativo nulo.");
@@ -33,7 +36,7 @@ public class CicloFormativo {
         setNombre(cicloFormativo.getNombre());
         setHoras(cicloFormativo.getHoras());
     }
-    //2.3-Métodos de acceso y modificación
+    //Métodos de acceso y modificación
     public int getCodigo() {
         return codigo;
     }
@@ -96,7 +99,7 @@ public class CicloFormativo {
         this.horas = horas;
     }
 
-    //5-Métodos equals y hashCode
+    //Métodos equals y hashCode
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -108,12 +111,12 @@ public class CicloFormativo {
         return Objects.hash(codigo);
     }
 
-    //6-Imprimir
+    //Imprimir
     public String imprimir(){
         return String.format("Código ciclo formativo=%d, nombre ciclo formativo=%s",this.getCodigo(),this.getNombre());
     }
 
-    //7-ToString
+    //ToString
     @Override
     public String toString() {
         return String.format("Código ciclo formativo=%d, familia profesional=%s, grado=%s, nombre ciclo formativo=%s, horas=%s",this.getCodigo(),this.getFamiliaProfesional(),this.getGrado(),this.getNombre(),this.getHoras());

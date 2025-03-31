@@ -1,5 +1,9 @@
-package org.iesalandalus.programacion.matriculacion.dominio;
+package org.iesalandalus.programacion.matriculacion.modelo.dominio;
 
+/**
+ * Clase que representa un Grado E, una especialización de Grado.
+ * Un Grado E tiene una duración fija de 1 año y un número de ediciones que debe ser al menos 1.
+ */
 public class GradoE extends Grado {
 
     private int numEdiciones;
@@ -16,7 +20,7 @@ public class GradoE extends Grado {
 
     public void setNumEdiciones(int numEdiciones) {
         if (numEdiciones < 1) {
-            throw new IllegalArgumentException("ERROR: El número de ediciones un grado E no puede ser menor que 1.");
+            throw new IllegalArgumentException("ERROR: El número de ediciones de un grado E no puede ser menor que 1.");
         }
         this.numEdiciones = numEdiciones;
     }

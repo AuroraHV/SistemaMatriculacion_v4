@@ -1,26 +1,52 @@
-package org.iesalandalus.programacion.matriculacion.negocio;
+package org.iesalandalus.programacion.matriculacion.modelo.negocio.memoria;
 
-import org.iesalandalus.programacion.matriculacion.dominio.Asignatura;
-import org.iesalandalus.programacion.matriculacion.dominio.CicloFormativo;
+import org.iesalandalus.programacion.matriculacion.modelo.dominio.Asignatura;
+import org.iesalandalus.programacion.matriculacion.modelo.dominio.CicloFormativo;
+import org.iesalandalus.programacion.matriculacion.modelo.negocio.IAsignaturas;
 
 import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
 
-public class Asignaturas {
-    //1-Atributos
+/**
+ * Clase que gestiona una colección de asignaturas.
+ * Permite insertar, buscar, borrar y obtener información sobre las asignaturas.
+ * Las asignaturas se almacenan en un array con una capacidad.
+ */
+public class Asignaturas implements IAsignaturas {
+    //Array de asignaturas.
     private ArrayList<Asignatura> coleccionAsignaturas;
 
-    //1.1-Constructor con lista de capacidad e inicializa atributos
+    /**
+     * Constructor de la clase Asignaturas.
+     * Inicializa la colección con la capacidad especificada.
+     */
     public Asignaturas() {
         this.coleccionAsignaturas= new ArrayList<>();
+        comenzar();
     }
 
-    //Métodos
-    //1.2-Get que devuelve copia profunda
+    @Override
+    public void comenzar() {
+    }
+
+    @Override
+    public void terminar() {
+    }
+
+    /**
+     * Obtiene una copia profunda de la colección de asignaturas.
+     *
+     * @return Un arreglo con una copia de las asignaturas.
+     */
     public ArrayList<Asignatura> get() {
         return copiaProfundaAsignaturas();
     }
-    //Copia profunda de la colección
+
+    /**
+     * Realiza una copia profunda de las asignaturas almacenadas en la colección.
+     *
+     * @return Un arreglo con las asignaturas copiadas.
+     */
     private ArrayList<Asignatura> copiaProfundaAsignaturas() {
         ArrayList<Asignatura> copiaAsignaturas = new ArrayList<>();
         for (Asignatura a : coleccionAsignaturas) {
@@ -28,42 +54,57 @@ public class Asignaturas {
         }
         return copiaAsignaturas;
     }
+
+    /**
+     * Obtiene el tamaño actual de la colección (número de asignaturas almacenadas).
+     *
+     * @return El tamaño actual de la colección.
+     */
     public int getTamano() {
         return this.coleccionAsignaturas.size();
     }
 
-    //1.3-Insertar asignaturas al final de la colección mientras no esté repetido o sea nulo
+    /**
+     * Inserta una asignatura en la colección.
+     *
+     * @param asignatura La asignatura a insertar.
+     * @throws OperationNotSupportedException Si no se pueden insertar más asignaturas
+     *         o si ya existe una asignatura con el mismo código.
+     * @throws NullPointerException Si la asignatura es nula.
+     */
     public void insertar(Asignatura asignatura) throws OperationNotSupportedException {
         if (asignatura == null) {
             throw new NullPointerException("ERROR: No se puede insertar una asignatura nula.");
         }
         int indice = this.coleccionAsignaturas.indexOf(asignatura);
         if (indice == -1) {
-            // Obtener el ciclo formativo de la asignatura a insertar
+            // Obtener el ciclo formativo de la asignatura a insertar.
             CicloFormativo cicloFormativo = asignatura.getCicloFormativo();
             int horasTotales = asignatura.getHorasAnuales() + asignatura.getHorasDesdoble();
-
-            // Sumar las horas de las asignaturas que pertenecen al mismo ciclo formativo
+            // Sumar las horas de las asignaturas que pertenecen al mismo ciclo formativo.
             for (Asignatura a : coleccionAsignaturas) {
                 if (a.getCicloFormativo().equals(cicloFormativo)) {
                     horasTotales += a.getHorasAnuales() + a.getHorasDesdoble();
                 }
             }
-
-            // Validar si se supera el límite de horas del ciclo formativo
+            // Validar si se supera el límite de horas del ciclo formativo.
             if (horasTotales > cicloFormativo.getHoras()) {
                 throw new IllegalArgumentException("ERROR: El número total de horas de asignaturas en el ciclo formativo supera el máximo permitido de "
                         + cicloFormativo.getHoras() + " horas.");
             }
-
             this.coleccionAsignaturas.add(asignatura);
         } else {
             throw new OperationNotSupportedException("ERROR: Ya existe una asignatura con ese código.");
         }
-
     }
 
-    //1.4-Buscar una asignatura y devolverla si está en la colección, en caso contrario será null
+    /**
+     * Busca una asignatura en la colección.
+     *
+     * @param asignatura La asignatura a buscar.
+     * @return La asignatura encontrada o null si no se encuentra.
+     * @throws NullPointerException Si la asignatura es nula.
+     */
     public Asignatura buscar(Asignatura asignatura) {
         if (asignatura == null) {
             throw new NullPointerException("ERROR: No se puede buscar una asignatura nula.");
@@ -76,7 +117,13 @@ public class Asignaturas {
         }
     }
 
-    //1.5-Si una asignatura se encuentra en la colección, se borra
+    /**
+     * Borra una asignatura de la colección.
+     *
+     * @param asignatura La asignatura a borrar.
+     * @throws OperationNotSupportedException Si no existe la asignatura a borrar.
+     * @throws NullPointerException Si la asignatura es nula.
+     */
     public void borrar(Asignatura asignatura) throws OperationNotSupportedException {
         if (asignatura == null) {
             throw new NullPointerException("ERROR: No se puede borrar una asignatura nula.");

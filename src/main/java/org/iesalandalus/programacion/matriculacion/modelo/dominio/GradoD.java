@@ -1,5 +1,9 @@
-package org.iesalandalus.programacion.matriculacion.dominio;
+package org.iesalandalus.programacion.matriculacion.modelo.dominio;
 
+/**
+ * Clase que representa un Grado D, que es una especialización de Grado.
+ * Un Grado D tiene una modalidad específica y puede durar entre 2 y 3 años.
+ */
 public class GradoD extends Grado {
 
     private Modalidad modalidad;

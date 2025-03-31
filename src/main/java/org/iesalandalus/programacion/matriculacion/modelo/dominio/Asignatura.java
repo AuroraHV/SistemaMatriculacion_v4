@@ -1,8 +1,13 @@
-package org.iesalandalus.programacion.matriculacion.dominio;
+package org.iesalandalus.programacion.matriculacion.modelo.dominio;
 
 import java.util.Objects;
 
-//1-Clase Asignatura
+/**
+ * Representa una asignatura dentro del sistema de matriculación.
+ * Cada asignatura tiene un código único, nombre, número de horas anuales,
+ * curso al que pertenece, número de horas de desdoble, especialidad del profesorado
+ * y un ciclo formativo asociado.
+ */
 public class Asignatura {
     //Constantes
     public static final int MAX_NUM_HORAS_ANUALES = 300;
@@ -17,7 +22,7 @@ public class Asignatura {
     private EspecialidadProfesorado especialidadProfesorado;
     private CicloFormativo cicloFormativo;
 
-    //3-Constructor con parámetros
+    //Constructor con parámetros
     public Asignatura(String codigo, String nombre, int horasAnuales, Curso curso, int horasDesdoble, EspecialidadProfesorado especialidadProfesorado, CicloFormativo cicloFormativo) {
         setCodigo(codigo);
         setNombre(nombre);
@@ -28,7 +33,7 @@ public class Asignatura {
         setCicloFormativo(cicloFormativo);
     }
 
-    //4-Constructor copia
+    //Constructor copia
     public Asignatura(Asignatura asignatura) {
         if (asignatura == null) {
             throw new NullPointerException("ERROR: No es posible copiar una asignatura nula.");
@@ -42,7 +47,7 @@ public class Asignatura {
         setCicloFormativo(asignatura.getCicloFormativo());
     }
 
-    //2-Métodos de acceso y modificación
+    //Métodos de acceso y modificación
     public CicloFormativo getCicloFormativo() {
         return new CicloFormativo (cicloFormativo);
     }
@@ -129,7 +134,7 @@ public class Asignatura {
         this.especialidadProfesorado = especialidadProfesorado;
     }
 
-    //6-Métodos equals y hashCode
+    //Métodos equals y hashCode
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -142,11 +147,11 @@ public class Asignatura {
         return Objects.hash(codigo);
     }
 
-    //6-Imprimir
+    //Imprimir
     public String imprimir(){
         return String.format("Código asignatura=%s, nombre asignatura=%s, ciclo formativo=%s", this.getCodigo(), this.getNombre(), this.getCicloFormativo().imprimir());
     }
-    //7-ToString
+    //ToString
     @Override
     public String toString() {
         return String.format("Código=%s, nombre=%s, horas anuales=%d, curso=%s, horas desdoble=%d, ciclo formativo=%s, especialidad profesorado=%s", this.getCodigo(), this.getNombre(),this.getHorasAnuales(),

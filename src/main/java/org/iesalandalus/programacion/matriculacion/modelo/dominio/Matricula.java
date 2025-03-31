@@ -1,4 +1,4 @@
-package org.iesalandalus.programacion.matriculacion.dominio;
+package org.iesalandalus.programacion.matriculacion.modelo.dominio;
 
 import javax.naming.OperationNotSupportedException;
 import java.time.LocalDate;
@@ -6,7 +6,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
 
-//1-Clase matrícula
+/**
+ * Representa una matrícula de un alumno en un curso académico.
+ * Incluye información sobre el identificador, el curso académico, fechas de matriculación y anulación,
+ * el alumno asociado y las asignaturas matriculadas.
+ */
 public class Matricula {
     //Constantes
     public static final int MAXIMO_MESES_ANTERIOR_ANULACION = 6;
@@ -23,7 +27,7 @@ public class Matricula {
     private Alumno alumno;
     private ArrayList<Asignatura> coleccionAsignaturas;
 
-    //4-Constructor con parámetros
+    //Constructor con parámetros
     public Matricula (int idMatricula, String cursoAcademico, LocalDate fechaMatriculacion, Alumno alumno, ArrayList<Asignatura> coleccionAsignaturas) throws OperationNotSupportedException {
 
         setIdMatricula(idMatricula);
@@ -33,7 +37,7 @@ public class Matricula {
         setColeccionAsignaturas(coleccionAsignaturas);
     }
 
-    //5-Constructor copia
+    //Constructor copia
     public Matricula(Matricula matricula) throws OperationNotSupportedException {
         if (matricula == null) {
             throw new NullPointerException("ERROR: No es posible copiar una matrícula nula.");
@@ -46,7 +50,7 @@ public class Matricula {
         setColeccionAsignaturas(matricula.getColeccionAsignaturas());
     }
 
-    //2-Métodos de acceso y modificación
+    //Métodos de acceso y modificación
     public int getIdMatricula() {
         return idMatricula;
     }
@@ -142,7 +146,7 @@ public class Matricula {
         }
     }
 
-    //3-Máximo horas de asignaturas de una matricula
+    //Máximo horas de asignaturas de una matricula
     private boolean superaMaximoNumeroHorasMatricula(ArrayList<Asignatura> asignaturasMatricula) {
         int totalHoras = 0;
         for (Asignatura asignatura : asignaturasMatricula) {
@@ -156,7 +160,7 @@ public class Matricula {
         return false;
     }
 
-    //5-Métodos equals y hashCode
+    //Métodos equals y hashCode
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -170,7 +174,7 @@ public class Matricula {
         return Objects.hash(idMatricula);
     }
 
-    //7-Cadena asignaturas de la matricula
+    //Cadena asignaturas de la matricula
     private String asignaturasMatricula(){
         String resultado= "";
         for (int i=0; i<coleccionAsignaturas.size();i++){
@@ -184,7 +188,7 @@ public class Matricula {
         return resultado;
     }
 
-    //8-Imprimir
+    //Imprimir
     public String imprimir(){
         return String.format("idMatricula=%d, curso académico=%s, fecha matriculación=%s, alumno={%s}",
                 this.getIdMatricula(), this.getCursoAcademico(),
@@ -192,7 +196,7 @@ public class Matricula {
                 this.getAlumno().imprimir());
     }
 
-    //7-ToString
+    //ToString
     @Override
     public String toString() {
         if (fechaAnulacion == null) {

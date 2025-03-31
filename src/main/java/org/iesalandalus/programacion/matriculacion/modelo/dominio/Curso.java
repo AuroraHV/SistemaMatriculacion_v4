@@ -1,19 +1,26 @@
-package org.iesalandalus.programacion.matriculacion.dominio;
+package org.iesalandalus.programacion.matriculacion.modelo.dominio;
 
+/**
+ * Representa los cursos disponibles para la matriculación de un alumno.
+ * Los cursos disponibles son:
+ *     PRIMERO: Representa el primer curso.
+ *     SEGUNDO: Representa el segundo curso.
+ * Cada curso tiene una descripción asociada que se muestra en formato de cadena.
+ */
 public enum Curso {
-    //1-Enumerado con valores
+    //Enumerado con valores
     PRIMERO("Primero"),
     SEGUNDO("Segundo");
 
-    //2-Atributo
+    //Atributo
     private String cadenaAMostrar;
 
-    //3-Constructor
+    //Constructor
     private Curso(String cadenaAMostrar) {
         this.cadenaAMostrar = cadenaAMostrar;
     }
 
-    //4-Método imprimir
+    //Método imprimir
     public String imprimir() {
         if (this == PRIMERO) {
             return "0.-" + this.cadenaAMostrar;
@@ -24,7 +31,7 @@ public enum Curso {
         }
     }
 
-    //5-Representación en texto de los valores
+    //Representación en texto de los valores
     @Override
     public String toString() {
         return cadenaAMostrar;

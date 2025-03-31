@@ -1,5 +1,10 @@
 package org.iesalandalus.programacion.matriculacion.vista;
 
+/**
+ * Enumeración Opcion que representa las diferentes opciones disponibles en el menú de la aplicación.
+ * Cada opción está asociada a una cadena que se muestra en la consola.
+ * Las opciones incluyen insertar, buscar, borrar y mostrar alumnos, ciclos formativos, asignaturas y matrículas.
+ */
 public enum Opcion {
     //1-Opciones del menu
     SALIR("Salir") {
@@ -181,25 +186,41 @@ public enum Opcion {
         }
     };
 
-    //1-Atributo
-    private final String mensajeaMostrar;
+    // Atributo que contiene la cadena a mostrar asociada a cada opción.
+    private final String mensajeAMostrar;
 
+    // Instancia de la vista asociada a la opción.
     private static Vista vista;
 
-    //1-Constructor
-    private Opcion (String mensajeaMostrar){
-        this.mensajeaMostrar=mensajeaMostrar;
+    /**
+     * Constructor de la enumeración Opcion que asocia un mensaje a mostrar a cada opción.
+     * @param mensajeAMostrar Mensaje descriptivo que se mostrará cuando se imprima la opción.
+     */
+    private Opcion (String mensajeAMostrar){
+        this.mensajeAMostrar=mensajeAMostrar;
     }
 
+    /**
+     * Método abstracto que debe ser implementado en cada opción del enum.
+     */
     public abstract void ejecutar();
 
+    /**
+     * Método para establecer la vista que se usará en la ejecución de las opciones.
+     *
+     * @param vista Instancia de la clase Vista.
+     */
     public static void setVista(Vista vista) {
         Opcion.vista = vista;
     }
 
-    //1-toString con ordinal
+    /**
+     * Devuelve la representación en cadena de la opción, que incluye su índice en la enumeración
+     * seguido del mensaje a mostrar.
+     * @return Representación en cadena de la opción.
+     */
     @Override
     public String toString() {
-        return this.ordinal() + ".- " + this.mensajeaMostrar;
+        return this.ordinal() + ".- " + this.mensajeAMostrar;
     }
 }
